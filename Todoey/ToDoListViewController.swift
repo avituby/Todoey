@@ -10,10 +10,16 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
     
-    let itemArray = ["Find Mike", "Make Sushi", "Sleep Well"]
-        
+    var itemArray = ["Find Mike", "Make Sushi", "Sleep Well"]
+    
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let items = self.defaults.array(forKey: "ToDoListArray") as? [String] {
+            itemArray = items
+        }
+        print ("View Did Load")
         // Do any additional setup after loading the view.
     }
     
@@ -43,6 +49,24 @@ class ToDoListViewController: UITableViewController {
         
     }
     
+    //MARK - BARBUTTON METHODS
     
+    @IBAction func barButtonPressed(_ sender: UIBarButtonItem) {
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            self.itemArray.append(textField.text!)
+            self.defaults.setValue(self.itemArray, forKey: "ToDoListArray")
+            self.tableView.reloadData()
+        }
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create New Item"
+            textField = alertTextField
+            print(alertTextField)
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
 }
 
