@@ -54,16 +54,16 @@ class CategoryViewController: UITableViewController {
     //mark: - TableView Delegate Methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("goToItems Segue start")
+//        print("goToItems Segue start")
         performSegue(withIdentifier: "goToItems", sender: self)
-        print("goToItems Segue end")
+//        print("goToItems Segue end")
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ToDoListViewController
-        print ("prepare for Seque 0")
+//        print ("prepare for Seque 0")
         if let indexPath = tableView.indexPathForSelectedRow {
-            print ("prepare for Seque")
+//            print ("prepare for Seque")
             destinationVC.selectedCategory = categoriesArray[indexPath.row]
             print ("Selected Category = \(destinationVC.selectedCategory!.name)")
         }
