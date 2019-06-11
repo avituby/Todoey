@@ -22,7 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        print ("Defaults File = \(NSSearchPathForDirectoriesInDomains( .documentDirectory,  .userDomainMask, true).last! as String)")
         
         print (Realm.Configuration.defaultConfiguration.fileURL)
-        
+
+/*
         let data = Data()
         data.name="avi"
         data.age=52
@@ -34,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             print ("Error initializing Realm \(error)")
         }
-        
+ */
         return true
     }
 
