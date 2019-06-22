@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
 
 class CategoryViewController: UITableViewController {
 
@@ -25,7 +26,7 @@ class CategoryViewController: UITableViewController {
             newCategory.name = textField.text!
 //            newItem.done = false
 //            self.categoriesArray.append(newCategory)
-            self.save(category: newCategory)
+            self.save(category: newCategory, add:true)
         }
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create New Category"
@@ -39,7 +40,7 @@ class CategoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadCategories()
-
+        tableView.rowHeight=80
     }
 
     //mark: - TableView Datasource Methods
@@ -48,8 +49,15 @@ class CategoryViewController: UITableViewController {
         return categories?.count ?? 1
     }
     
+//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! SwipeTableViewCell
+//        cell.delegate = self
+//        return cell
+//    }
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! SwipeTableViewCell
+        cell.delegate = self
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories"
         return cell
     }
@@ -78,16 +86,48 @@ class CategoryViewController: UITableViewController {
         categories = realm.objects(Category.self)
     }
 
-    func save(category: Category){
+    
+    func save(category: Category, add: Bool){
         do {
             try realm.write {
-                realm.add(category)
+                if add {
+                    realm.add(category)
+                    tableView.reloadData()
+                } else {
+                    realm.delete(category)
+                }
             }
         }   catch {
             print ("Error Saving context \(error)")
         }
-        tableView.reloadData()
     }
     
     
+}
+
+extension CategoryViewController: SwipeTableViewCellDelegate {
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard orientation == .right else { return nil }
+        
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+            if let selected_category = self.categories?[indexPath.row] {
+                self.save(category: selected_category, add: false)
+            }
+            print ("Category Deleted")
+            // handle action by updating model with deletion
+        }
+        
+        // customize the action appearance
+        deleteAction.image = UIImage(named: "delete")
+        
+        return [deleteAction]
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+        var options = SwipeOptions()
+        options.expansionStyle = .destructive
+//        options.transitionStyle = .border
+        return options
+    }
 }
